@@ -96,7 +96,7 @@ Then, each row is passed to DH_row_to_links function
 	 			
 	 			sam_robot.insertAdjacentHTML('beforeend',wynik)
 				console.log(sam_robot)
-			return sam_robot.outerHTML
+			return vkbeautify.xml(sam_robot.outerHTML)
 			
 Function below takes a dictionary of row values and converts it into xml code
 

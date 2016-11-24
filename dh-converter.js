@@ -36,7 +36,7 @@
         sam_robot.insertAdjacentHTML('beforeend', wynik);
       }
       console.log(sam_robot);
-      return sam_robot.outerHTML;
+      return vkbeautify.xml(sam_robot.outerHTML);
     };
 
     Robot_Maker.prototype.DH_row_to_links = function(row_dict) {
