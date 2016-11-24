@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script type="text/javascript" src="./mustache.js"></script>
+
+<script type="text/javascript" src="./dh-converter.js"></script>
+
+
+<style>
+#drop_zone {
+  border: 2px dashed #bbb;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  padding: 25px;
+  text-align: center;
+  font: 20pt bold 'Vollkorn';
+  color: #bbb;
+}
+#drop_zone:hover
+{
+border-color:green;
+border-style: dotted;
+}
+.gcode
+{
+  font-family:"Courier New",monospace;
+  width:100%;
+  height:50%;
+}
+.gcode_drop
+{
+  height:10%;
+}
+}</style>
+
+
+
+</head>
+<body>
+
+
+<h3>Denavit Hartenberg to URDF converter</h3>
+<form>
+<div id="drop_zone"><b>Drop your DH-table here </b> or copy it to text area below: <br><textarea class="gcode gcode_drop" id="dh-table" rows="8">
+|th|d|a|alpha|R|
+-------
+|0|0|0|0|true|
+|0|2|0|1.57|false|
+|0|0|2|0|true|
+|0|0|2|0|true|
+|-0.8|0|1|0|true|</textarea></div>
+<output id="list"></output>
+<div id="file_text"></div>
+<button type="button" id="convert_button">Convert DH</button>
+<textarea id="wynik_urdf" rows="15" class="gcode">Result</textarea>
+
+</form>
+<p> Code availible at: <a href="https://github.com/AdoHaha/uprosc_gcode">https://github.com/AdoHaha/uprosc_gcode</a> </p>
+
+
+</body>
+</html>
+
+<script type="text/javascript">
+var dropZone = document.getElementById('dh-table');
+var buttonz = document.getElementById('convert_button');
+
+  
+function konwertuj(event) 
+				{
+				event.preventDefault();
+				tab_dh=document.getElementById('dh-table').value;
+				robot=new Robot_Maker(tab_dh).urdf;
+				document.getElementById('wynik_urdf').value = robot;
+				}
+
+buttonz.addEventListener("click", konwertuj,false);
+
+</script>
+
+
+
+
+
+
