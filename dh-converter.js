@@ -7,43 +7,83 @@
       this.table = table1;
       this.parser = new DOMParser();
       this.robot_dom = this.parser.parseFromString(this.robot_xml, "text/xml");
+      this.robot_dom_modified = this.parser.parseFromString(this.robot_xml_modified, "text/xml");
       this.urdf = this.convert_text_table(this.table);
     }
 
     Robot_Maker.prototype.robot_xml = "<robot name='example_robot'> <link name='link0_passive'><visual> <material name='blue'><color rgba='0 0 .8 1'/></material> <geometry> <origin xyz='0 0 0' rpy='0 0 0'/> <cylinder length='0.6' radius='0.1'/></geometry></visual></link> <link name='link0_x_axis'><visual> <material name='red'><color rgba='1 0 0 1'/></material> <geometry> <origin xyz='0 0 0' rpy='0 0 0'/> <cylinder length='0.6' radius='0.1'/></geometry></visual></link> <joint name='q0_x' type='fixed'> <origin xyz='0 0 0' rpy='0 1.571 0'/> <parent link='link0_passive' /> <child link='link0_x_axis' /> </joint> </robot> ";
 
-    Robot_Maker.prototype.row_template_insert = "<link name='link{{name}}'></link> <link name='link{{name}}_passive'><visual> <origin xyz='0 0 0.25' rpy='0 0 0'/><material name='blue' /><geometry><cylinder length='0.5' radius='0.05'/></geometry></visual></link> <link name='link{{name}}_x_axis'><visual><origin xyz='0 0 0.25' rpy='0 0 0'/> <material name='red' /><geometry><cylinder length='0.5' radius='0.05'/></geometry></visual></link> <joint name='q{{name}}' type='{{type}}'> <origin xyz='0 0 {{d}}' rpy='0 0 {{th}}'/> <parent link='link{{previous_name}}_passive' /> <child link='link{{name}}' /> <axis xyz='0 0 1'/> </joint> <joint name='q{{row_no}}_passive' type='fixed'> <origin xyz='{{a}} 0 0' rpy='{{alpha}} 0 0'/> <parent link='link{{name}}' /> <child link='link{{name}}_passive' /> </joint> <joint name='q{{row_no}}_x' type='fixed'> <origin xyz='0 0 0' rpy='0 1.571 0'/> <parent link='link{{name}}_passive' /> <child link='link{{name}}_x_axis' /> </joint>";
+    Robot_Maker.prototype.robot_xml_modified = "<robot name='example_robot'> <link name='link0'><visual> <material name='blue'><color rgba='0 0 .8 1'/></material> <geometry> <origin xyz='0 0 0' rpy='0 0 0'/> <cylinder length='0.6' radius='0.1'/></geometry></visual></link> </robot> ";
+
+    Robot_Maker.prototype.row_template_insert = "<link name='link{{name}}'></link> <link name='link{{name}}_x_axis'><visual><origin xyz='0 0 0.25' rpy='0 0 0'/> <material name='red' /><geometry><cylinder length='0.5' radius='0.05'/></geometry></visual></link> <joint name='q{{name}}' type='{{type}}'> <origin xyz='0 0 {{d}}' rpy='0 0 {{th}}'/> <parent link='link{{previous_name}}_passive' /> <child link='link{{name}}' /> <axis xyz='0 0 1'/> </joint> <joint name='q{{row_no}}_passive' type='fixed'> <origin xyz='{{a}} 0 0' rpy='{{alpha}} 0 0'/> <parent link='link{{name}}' /> <child link='link{{name}}_passive' /> </joint>";
+
+    Robot_Maker.prototype.row_template_add_x = "<link name='link{{name}}_passive'><visual> <origin xyz='0 0 0.25' rpy='0 0 0'/><material name='blue' /><geometry><cylinder length='0.5' radius='0.05'/></geometry></visual></link> <joint name='q{{row_no}}_x' type='fixed'> <origin xyz='0 0 0' rpy='0 1.571 0'/> <parent link='link{{name}}_passive' /> <child link='link{{name}}_x_axis' /> </joint>";
+
+    Robot_Maker.prototype.modified_dh_row_template_insert = "<link name='link{{name}}'> <visual><origin xyz='0 0 0.25' rpy='0 0 0'/> <material name='red' /> <geometry><cylinder length='0.5' radius='0.05'/></geometry></visual></link> <joint name='q{{name}}' type='{{type}}'> <origin xyz='{{a}} {{dy}} {{dz}}' rpy='{{alpha}} 0 {{th}}'/> <parent link='link{{previous_name}}' /> <child link='link{{name}}' /> <axis xyz='0 0 1'/> </joint>";
 
     Robot_Maker.prototype.convert_text_table = function(table) {
 
       /* function converts markdown table into nodes, we assume that table has header (two lines)
        */
-      var i, line_no, lines_of_text, pattern, przerob_linijke, ref, regg, robot_dict, sam_robot, wynik;
-      pattern = /\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?(\w+?)\W*?\|/;
-      regg = new RegExp(pattern);
+      var i, is_modified, is_standard, line_no, lines_of_text, modifed_dh, pattern, przerob_linijke, ref, regg, robot_dict, sam_robot, standard_dh, wynik;
       lines_of_text = table.split('\n');
       robot_dict = {};
-      sam_robot = this.robot_dom.getElementsByTagName("robot")[0];
+      standard_dh = new RegExp(/\|(th|theta)\|d\|a\|alpha\|R\|/i);
+      modifed_dh = new RegExp(/\|a\|alpha\|(th|theta)\|d\|R\|/i);
+      is_standard = standard_dh.test(lines_of_text[0]);
+      is_modified = modifed_dh.test(lines_of_text[0]);
+      if (is_standard) {
+        sam_robot = this.robot_dom.getElementsByTagName("robot")[0];
+      } else if (is_modified) {
+        sam_robot = this.robot_dom_modified.getElementsByTagName("robot")[0];
+      } else {
+        window.alert("Not a valid table. please use table header in form of |th|d|a|alpha|R| or |a|alpha|th|d|R|");
+        return null;
+      }
+      pattern = /\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?(\w+?)\W*?\|/;
+      regg = new RegExp(pattern);
       for (line_no = i = 2, ref = lines_of_text.length; 2 <= ref ? i < ref : i > ref; line_no = 2 <= ref ? ++i : --i) {
         robot_dict.row_no = line_no - 1;
         przerob_linijke = lines_of_text[line_no].match(regg);
-        robot_dict.th = przerob_linijke[1];
-        robot_dict.d = przerob_linijke[2];
-        robot_dict.a = przerob_linijke[3];
-        robot_dict.alpha = przerob_linijke[4];
-        robot_dict.R = przerob_linijke[5] === "true";
+        if (lines_of_text[line_no].length === 0) {
+          continue;
+        }
+        if (przerob_linijke === null || przerob_linijke.length < 5) {
+          window.alert("line " + (line_no - 1) + " is not valid");
+          console.log("line " + (line_no - 1) + " is not valid");
+          continue;
+        }
+        if (is_standard) {
+          robot_dict.th = przerob_linijke[1];
+          robot_dict.d = przerob_linijke[2];
+          robot_dict.a = przerob_linijke[3];
+          robot_dict.alpha = przerob_linijke[4];
+          robot_dict.R = przerob_linijke[5] === "true";
+        }
+        if (is_modified) {
+          robot_dict.a = przerob_linijke[1];
+          robot_dict.alpha = przerob_linijke[2];
+          robot_dict.th = przerob_linijke[3];
+          robot_dict.d = przerob_linijke[4];
+          robot_dict.modified_dh = true;
+          robot_dict.R = przerob_linijke[5] === "true";
+        }
+        console.log(robot_dict);
         wynik = this.DH_row_to_links(robot_dict);
         sam_robot.insertAdjacentHTML('beforeend', wynik);
       }
-      console.log(sam_robot);
       return vkbeautify.xml(sam_robot.outerHTML);
     };
 
-    Robot_Maker.prototype.DH_row_to_links = function(row_dict) {
+    Robot_Maker.prototype.DH_row_to_links = function(row_dict, add_x) {
+      var alpha, d, row_no, row_xml, template_xml;
+      if (add_x == null) {
+        add_x = true;
+      }
 
-      /* function gets a dictionary representing row in DH table, returns xml node
+      /* function gets a dictionary representing row in DH table, returns xml node based on two links
+      			additional code representing x axis can be added if add_x is true
        */
-      var row_no, row_xml;
       row_no = row_dict.row_no;
       row_dict.name = row_no;
       row_dict.previous_name = row_no - 1;
@@ -52,7 +92,20 @@
       } else {
         row_dict.type = "prismatic";
       }
-      row_xml = Mustache.render(this.row_template_insert, row_dict);
+      template_xml = this.row_template_insert;
+      if (add_x) {
+        template_xml = template_xml + this.row_template_add_x;
+      }
+      if (row_dict.modified_dh) {
+        alpha = parseFloat(row_dict.alpha);
+        d = parseFloat(row_dict.d);
+        row_dict.dy = -Math.sin(alpha) * d;
+        row_dict.dz = Math.cos(alpha) * d;
+        console.log(row_dict.dy);
+        console.log(row_dict.dz);
+        template_xml = this.modified_dh_row_template_insert;
+      }
+      row_xml = Mustache.render(template_xml, row_dict);
       return row_xml;
     };
 
