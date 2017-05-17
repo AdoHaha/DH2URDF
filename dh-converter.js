@@ -44,7 +44,7 @@
       regg = new RegExp(pattern);
       for (line_no = i = 2, ref = lines_of_text.length; 2 <= ref ? i < ref : i > ref; line_no = 2 <= ref ? ++i : --i) {
         robot_dict.row_no = line_no - 1;
-        przerob_linijke = lines_of_text[line_no].match(regg);
+        przerob_linijke = lines_of_text[line_no].split('|');
         if (lines_of_text[line_no].length === 0) {
           continue;
         }
@@ -54,17 +54,17 @@
           continue;
         }
         if (is_standard) {
-          robot_dict.th = przerob_linijke[1];
-          robot_dict.d = przerob_linijke[2];
-          robot_dict.a = przerob_linijke[3];
-          robot_dict.alpha = przerob_linijke[4];
+          robot_dict.th = math["eval"](przerob_linijke[1]);
+          robot_dict.d = math["eval"](przerob_linijke[2]);
+          robot_dict.a = math["eval"](przerob_linijke[3]);
+          robot_dict.alpha = math["eval"](przerob_linijke[4]);
           robot_dict.R = przerob_linijke[5] === "true";
         }
         if (is_modified) {
-          robot_dict.a = przerob_linijke[1];
-          robot_dict.alpha = przerob_linijke[2];
-          robot_dict.th = przerob_linijke[3];
-          robot_dict.d = przerob_linijke[4];
+          robot_dict.a = math["eval"](przerob_linijke[1]);
+          robot_dict.alpha = math["eval"](przerob_linijke[2]);
+          robot_dict.th = math["eval"](przerob_linijke[3]);
+          robot_dict.d = math["eval"](przerob_linijke[4]);
           robot_dict.modified_dh = true;
           robot_dict.R = przerob_linijke[5] === "true";
         }

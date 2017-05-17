@@ -137,8 +137,8 @@ We hardcode that every line from the 3rd is treated as a row containing DH-value
 
 			for line_no in [2...lines_of_text.length]
 	 			robot_dict.row_no=line_no-1
-	 			przerob_linijke=lines_of_text[line_no].match(regg)
-	 	
+	 			#przerob_linijke=lines_of_text[line_no].match(regg)
+	 			przerob_linijke=lines_of_text[line_no].split('|')
 	 			if lines_of_text[line_no].length==0
 	 				continue
 	 			if przerob_linijke==null or przerob_linijke.length<5
@@ -146,16 +146,16 @@ We hardcode that every line from the 3rd is treated as a row containing DH-value
 	 				console.log("line "+(line_no-1)+" is not valid")
 	 				continue;
 	 			if is_standard	
-		 			robot_dict.th=przerob_linijke[1]
-		 			robot_dict.d=przerob_linijke[2]
-		 			robot_dict.a=przerob_linijke[3]
-		 			robot_dict.alpha=przerob_linijke[4]
+		 			robot_dict.th=math.eval(przerob_linijke[1])
+		 			robot_dict.d=math.eval(przerob_linijke[2])
+		 			robot_dict.a=math.eval(przerob_linijke[3])
+		 			robot_dict.alpha=math.eval(przerob_linijke[4])
 		 			robot_dict.R=przerob_linijke[5]=="true"
 		 		if is_modified
-		 			robot_dict.a=przerob_linijke[1]	
-		 			robot_dict.alpha=przerob_linijke[2]
-		 			robot_dict.th=przerob_linijke[3]
-		 			robot_dict.d=przerob_linijke[4]
+		 			robot_dict.a=math.eval(przerob_linijke[1])	
+		 			robot_dict.alpha=math.eval(przerob_linijke[2])
+		 			robot_dict.th=math.eval(przerob_linijke[3])
+		 			robot_dict.d=math.eval(przerob_linijke[4])
 		 			robot_dict.modified_dh=true
 		 			robot_dict.R=przerob_linijke[5]=="true"
 		 		console.log(robot_dict)
@@ -205,8 +205,8 @@ That is we translation=[a;0;0]+ R[x,alpha] [0;0;d]
 			row_xml=Mustache.render(template_xml,row_dict)
 			return 	row_xml
 		
-	
-		
+
+
 		
 		
 		
