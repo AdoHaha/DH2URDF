@@ -131,8 +131,8 @@ First we look whether user is using DH parameters or modified DH parameters, wha
 				
 A pattern is created to seek for valid DH values -- that is floating point numbers that are preeceeded by pipe |
 
-			pattern=/\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?(\w+?)\W*?\|/;
-			regg=new RegExp(pattern)
+			#pattern=/\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?(\w+?)\W*?\|/;
+			#regg=new RegExp(pattern)
 We hardcode that every line from the 3rd is treated as a row containing DH-values
 
 			for line_no in [2...lines_of_text.length]
@@ -145,20 +145,25 @@ We hardcode that every line from the 3rd is treated as a row containing DH-value
 	 				window.alert("line "+(line_no-1)+" is not valid") # TODO it should be some one nice alerting system
 	 				console.log("line "+(line_no-1)+" is not valid")
 	 				continue;
-	 			if is_standard	
-		 			robot_dict.th=math.eval(przerob_linijke[1])
-		 			robot_dict.d=math.eval(przerob_linijke[2])
-		 			robot_dict.a=math.eval(przerob_linijke[3])
-		 			robot_dict.alpha=math.eval(przerob_linijke[4])
-		 			robot_dict.R=przerob_linijke[5]=="true"
-		 		if is_modified
-		 			robot_dict.a=math.eval(przerob_linijke[1])	
-		 			robot_dict.alpha=math.eval(przerob_linijke[2])
-		 			robot_dict.th=math.eval(przerob_linijke[3])
-		 			robot_dict.d=math.eval(przerob_linijke[4])
-		 			robot_dict.modified_dh=true
-		 			robot_dict.R=przerob_linijke[5]=="true"
-		 		console.log(robot_dict)
+	 			try
+		 			if is_standard	
+			 			robot_dict.th=math.eval(przerob_linijke[1])
+			 			robot_dict.d=math.eval(przerob_linijke[2])
+			 			robot_dict.a=math.eval(przerob_linijke[3])
+			 			robot_dict.alpha=math.eval(przerob_linijke[4])
+			 			robot_dict.R=przerob_linijke[5]=="true"
+			 		if is_modified
+			 			robot_dict.a=math.eval(przerob_linijke[1])	
+			 			robot_dict.alpha=math.eval(przerob_linijke[2])
+			 			robot_dict.th=math.eval(przerob_linijke[3])
+			 			robot_dict.d=math.eval(przerob_linijke[4])
+			 			robot_dict.modified_dh=true
+			 			robot_dict.R=przerob_linijke[5]=="true"
+			 		console.log(robot_dict)
+			 	catch e 
+	 				window.alert("line "+(line_no-1)+" is not valid") # TODO it should be some one nice alerting system
+	 				console.log("line "+(line_no-1)+" is not valid")
+	 				continue;
 		 		wynik=@DH_row_to_links(robot_dict)
 	 			
 	 			sam_robot.insertAdjacentHTML('beforeend',wynik)

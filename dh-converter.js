@@ -25,7 +25,7 @@
 
       /* function converts markdown table into nodes, we assume that table has header (two lines)
        */
-      var i, is_modified, is_standard, line_no, lines_of_text, modifed_dh, pattern, przerob_linijke, ref, regg, robot_dict, sam_robot, standard_dh, wynik;
+      var e, i, is_modified, is_standard, line_no, lines_of_text, modifed_dh, przerob_linijke, ref, robot_dict, sam_robot, standard_dh, wynik;
       lines_of_text = table.split('\n');
       robot_dict = {};
       standard_dh = new RegExp(/\|(th|theta)\|d\|a\|alpha\|R\|/i);
@@ -40,8 +40,6 @@
         window.alert("Not a valid table. please use table header in form of |th|d|a|alpha|R| or |a|alpha|th|d|R|");
         return null;
       }
-      pattern = /\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?([-+]?[0-9]*\.?[0-9]+)\W*?\|\W*?(\w+?)\W*?\|/;
-      regg = new RegExp(pattern);
       for (line_no = i = 2, ref = lines_of_text.length; 2 <= ref ? i < ref : i > ref; line_no = 2 <= ref ? ++i : --i) {
         robot_dict.row_no = line_no - 1;
         przerob_linijke = lines_of_text[line_no].split('|');
@@ -53,22 +51,29 @@
           console.log("line " + (line_no - 1) + " is not valid");
           continue;
         }
-        if (is_standard) {
-          robot_dict.th = math["eval"](przerob_linijke[1]);
-          robot_dict.d = math["eval"](przerob_linijke[2]);
-          robot_dict.a = math["eval"](przerob_linijke[3]);
-          robot_dict.alpha = math["eval"](przerob_linijke[4]);
-          robot_dict.R = przerob_linijke[5] === "true";
+        try {
+          if (is_standard) {
+            robot_dict.th = math["eval"](przerob_linijke[1]);
+            robot_dict.d = math["eval"](przerob_linijke[2]);
+            robot_dict.a = math["eval"](przerob_linijke[3]);
+            robot_dict.alpha = math["eval"](przerob_linijke[4]);
+            robot_dict.R = przerob_linijke[5] === "true";
+          }
+          if (is_modified) {
+            robot_dict.a = math["eval"](przerob_linijke[1]);
+            robot_dict.alpha = math["eval"](przerob_linijke[2]);
+            robot_dict.th = math["eval"](przerob_linijke[3]);
+            robot_dict.d = math["eval"](przerob_linijke[4]);
+            robot_dict.modified_dh = true;
+            robot_dict.R = przerob_linijke[5] === "true";
+          }
+          console.log(robot_dict);
+        } catch (error) {
+          e = error;
+          window.alert("line " + (line_no - 1) + " is not valid");
+          console.log("line " + (line_no - 1) + " is not valid");
+          continue;
         }
-        if (is_modified) {
-          robot_dict.a = math["eval"](przerob_linijke[1]);
-          robot_dict.alpha = math["eval"](przerob_linijke[2]);
-          robot_dict.th = math["eval"](przerob_linijke[3]);
-          robot_dict.d = math["eval"](przerob_linijke[4]);
-          robot_dict.modified_dh = true;
-          robot_dict.R = przerob_linijke[5] === "true";
-        }
-        console.log(robot_dict);
         wynik = this.DH_row_to_links(robot_dict);
         sam_robot.insertAdjacentHTML('beforeend', wynik);
       }
