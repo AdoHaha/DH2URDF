@@ -11,7 +11,7 @@
       this.urdf = this.convert_text_table(this.table);
     }
 
-    Robot_Maker.prototype.robot_xml = "<robot name='example_robot'> <link name='link0_passive'><visual> <material name='blue'><color rgba='0 0 .8 1'/></material> <geometry> <origin xyz='0 0 0' rpy='0 0 0'/> <cylinder length='0.0' radius='0.1'/></geometry></visual></link> <link name='link0_x_axis'><visual> <material name='red'><color rgba='1 0 0 1'/></material> <geometry> <origin xyz='0 0 0' rpy='0 0 0'/> <cylinder length='0.0' radius='0.1'/></geometry></visual></link> <joint name='q0_x' type='fixed'> <origin xyz='0 0 0' rpy='0 1.571 0'/> <parent link='link0_passive' /> <child link='link0_x_axis' /> </joint> </robot> ";
+    Robot_Maker.prototype.robot_xml = "<robot name='example_robot'> <link name='link0_passive'><visual> <material name='blue'><color rgba='0 0 .8 1'/></material> <geometry> <origin xyz='0 0 0' rpy='0 0 0'/> <cylinder length='0.0' radius='0.0'/></geometry></visual></link> <link name='link0_x_axis'><visual> <material name='red'><color rgba='1 0 0 1'/></material> <geometry> <origin xyz='0 0 0' rpy='0 0 0'/> <cylinder length='0.0' radius='0.0'/></geometry></visual></link> <joint name='q0_x' type='fixed'> <origin xyz='0 0 0' rpy='0 1.571 0'/> <parent link='link0_passive' /> <child link='link0_x_axis' /> </joint> </robot> ";
 
     Robot_Maker.prototype.robot_xml_modified = "<robot name='example_robot'> <link name='link0'><visual> <material name='blue'><color rgba='0 0 .8 1'/></material> <geometry> <origin xyz='0 0 0' rpy='0 0 0'/> <cylinder length='0.6' radius='0.1'/></geometry></visual></link> </robot> ";
 
