@@ -139,7 +139,7 @@ We hardcode that every line from the 3rd is treated as a row containing DH-value
                  robot_dict.row_no=line_no-1
                  
                  #przerob_linijke=lines_of_text[line_no].match(regg)
-                 lines_of_text[line_no].replace('\s','');
+                 lines_of_text[line_no].replace(/\s/g, "");
                  przerob_linijke=lines_of_text[line_no].split('|')
                  if lines_of_text[line_no].length==0
                      continue

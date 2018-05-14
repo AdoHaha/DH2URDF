@@ -59,7 +59,7 @@
           robot_dict.row_no = line_no - 1;
           
           //przerob_linijke=lines_of_text[line_no].match(regg)
-          lines_of_text[line_no].replace('\s', '');
+          lines_of_text[line_no].replace(/\s/g, "");
           przerob_linijke = lines_of_text[line_no].split('|');
           if (lines_of_text[line_no].length === 0) {
             continue;
