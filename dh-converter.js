@@ -30,9 +30,9 @@
       // Using regex, we parse rows of table, starting from 2nd row. Regex looks for floating values for every but last column, we convert last column to boolean value.
       // Then, each row is passed to DH_row_to_links function
       convert_text_table(table) {
-        /* function converts markdown table into nodes, we assume that table has header (two lines)
-        */
         var e, i, is_modified, is_standard, line_no, lines_of_text, modifed_dh, przerob_linijke, ref, robot_dict, sam_robot, standard_dh, wynik;
+        table = table.replace(/(\t| )/g, '');
+        window.table = table;
         lines_of_text = table.split('\n');
         robot_dict = {};
         
@@ -59,7 +59,6 @@
           robot_dict.row_no = line_no - 1;
           
           //przerob_linijke=lines_of_text[line_no].match(regg)
-          lines_of_text[line_no].replace(/\s/g, "");
           przerob_linijke = lines_of_text[line_no].split('|');
           if (lines_of_text[line_no].length === 0) {
             continue;

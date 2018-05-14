@@ -104,7 +104,12 @@ Then, each row is passed to DH_row_to_links function
 
 
 
-            
+
+            table=table.replace(/(\t| )/g, '');
+	
+
+
+            window.table=table;
             lines_of_text=table.split('\n');
             robot_dict={}
             
@@ -139,7 +144,7 @@ We hardcode that every line from the 3rd is treated as a row containing DH-value
                  robot_dict.row_no=line_no-1
                  
                  #przerob_linijke=lines_of_text[line_no].match(regg)
-                 lines_of_text[line_no].replace(/\s/g, "");
+
                  przerob_linijke=lines_of_text[line_no].split('|')
                  if lines_of_text[line_no].length==0
                      continue
