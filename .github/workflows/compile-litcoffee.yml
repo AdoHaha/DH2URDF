@@ -12,6 +12,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
     
     - name: Setup Node.js
       uses: actions/setup-node@v3
@@ -30,7 +32,7 @@ jobs:
         git diff --exit-code dh-converter.js || echo "changed=true" >> $GITHUB_OUTPUT
     
     - name: Commit compiled files
-      if: steps.verify_diff.outputs.changed == 'true'
+      if: steps.verify_diff.outputs.changed == 'true' && github.event_name == 'push'
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
@@ -38,8 +40,14 @@ jobs:
         git commit -m "Auto-compile dh-converter.litcoffee"
     
     - name: Push changes
-      if: steps.verify_diff.outputs.changed == 'true'
-      uses: ad-m/github-push-action@master
+      if: steps.verify_diff.outputs.changed == 'true' && github.event_name == 'push'
+      uses: ad-m/github-push-action@v0.6.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{ github.ref }}
+    
+    - name: Fail if compiled file is out of date
+      if: steps.verify_diff.outputs.changed == 'true' && github.event_name == 'pull_request'
+      run: |
+        echo "Error: dh-converter.js is out of date. Please run 'coffee --compile dh-converter.litcoffee' and commit the changes."
+        exit 1
