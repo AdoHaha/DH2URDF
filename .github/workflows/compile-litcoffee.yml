@@ -1,0 +1,45 @@
+name: Compile LitCoffee
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install CoffeeScript
+      run: npm install -g coffeescript
+    
+    - name: Compile LitCoffee files
+      run: coffee --compile dh-converter.litcoffee
+    
+    - name: Check for changes
+      id: verify_diff
+      run: |
+        git diff --exit-code dh-converter.js || echo "changed=true" >> $GITHUB_OUTPUT
+    
+    - name: Commit compiled files
+      if: steps.verify_diff.outputs.changed == 'true'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add dh-converter.js
+        git commit -m "Auto-compile dh-converter.litcoffee"
+    
+    - name: Push changes
+      if: steps.verify_diff.outputs.changed == 'true'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
