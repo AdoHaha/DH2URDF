@@ -104,6 +104,7 @@
                    additional code representing x axis can be added if add_x is true
                    */
         var alpha, d, row_no, row_xml, template_xml;
+        var row_no, row_xml, template_xml;
         row_no = row_dict.row_no;
         row_dict.name = row_no;
         row_dict.previous_name = row_no - 1;
@@ -118,17 +119,14 @@
         }
         
         // There is the option of using modified Denavit-Hartenberg parameters, where the sequence of transformations is different. 
-        // Actually, this gives the opportunity to use only one link per row (while treating each row equally),
-        //  but some math is needed to calculate the start translation between joints. 
-        // That is we translation=[a;0;0]+ R[x,alpha] [0;0;d]
+        // The MDH transformation is Rx(alpha)*Tx(a)*Tz(d)*Rz(theta+q). Using a UNIFIED approach, we ALWAYS use 
+        // two joints for Modified DH to ensure correct kinematic order without complex conditional logic:
+        // - First joint (fixed): Rx(alpha)*Tx(a)
+        // - Second joint (variable): Tz(d)*Rz(theta)
         if (row_dict.modified_dh) {
-          alpha = parseFloat(row_dict.alpha);
-          d = parseFloat(row_dict.d);
-          row_dict.dy = -Math.sin(alpha) * d;
-          row_dict.dz = Math.cos(alpha) * d;
-          console.log(row_dict.dy);
-          console.log(row_dict.dz);
-          template_xml = this.modified_dh_row_template_insert;
+          // Always use 2-joint approach for Modified DH (unified approach)
+          // This ensures correct transformation order regardless of parameter values
+          template_xml = this.modified_dh_row_template;
         }
         row_xml = Mustache.render(template_xml, row_dict);
         return row_xml;
@@ -144,7 +142,7 @@
 
     Robot_Maker.prototype.row_template_add_x = "<link name='link{{name}}_passive'><visual> <origin xyz='0 0 0.25' rpy='0 0 0'/><material name='blue' /><geometry><cylinder length='0.5' radius='0.05'/></geometry></visual></link> <joint name='q{{row_no}}_x' type='fixed'> <origin xyz='0 0 0' rpy='0 1.571 0'/> <parent link='link{{name}}_passive' /> <child link='link{{name}}_x_axis' /> </joint>";
 
-    Robot_Maker.prototype.modified_dh_row_template_insert = "<link name='link{{name}}'> <visual><origin xyz='0 0 0.25' rpy='0 0 0'/> <material name='red' /> <geometry><cylinder length='0.5' radius='0.05'/></geometry></visual></link> <joint name='q{{name}}' type='{{type}}'> <origin xyz='{{a}} {{dy}} {{dz}}' rpy='{{alpha}} 0 {{th}}'/> <parent link='link{{previous_name}}' /> <child link='link{{name}}' /> <axis xyz='0 0 1'/> </joint>";
+    Robot_Maker.prototype.modified_dh_row_template = "<link name='link{{name}}_passive'></link> <link name='link{{name}}'> <visual><origin xyz='0 0 0.25' rpy='0 0 0'/> <material name='red' /> <geometry><cylinder length='0.5' radius='0.05'/></geometry></visual></link> <joint name='q{{row_no}}_passive' type='fixed'> <origin xyz='{{a}} 0 0' rpy='{{alpha}} 0 0'/> <parent link='link{{previous_name}}' /> <child link='link{{name}}_passive' /> </joint> <joint name='q{{name}}' type='{{type}}'> <origin xyz='0 0 {{d}}' rpy='0 0 {{th}}'/> <parent link='link{{name}}_passive' /> <child link='link{{name}}' /> <axis xyz='0 0 1'/> </joint>";
 
     return Robot_Maker;
 
