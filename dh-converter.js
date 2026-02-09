@@ -103,6 +103,7 @@
         /* function gets a dictionary representing row in DH table, returns xml node based on two links
                    additional code representing x axis can be added if add_x is true
                    */
+        var alpha, d, row_no, row_xml, template_xml;
         var row_no, row_xml, template_xml;
         row_no = row_dict.row_no;
         row_dict.name = row_no;
