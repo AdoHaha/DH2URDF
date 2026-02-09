@@ -78,21 +78,7 @@ A Moustache template is prepared to put the adequate values from the row od DH t
         <child link='link{{name}}_x_axis' />
         </joint>
         ";
-        modified_dh_row_template_insert:"<link name='link{{name}}'>
-        <visual><origin xyz='0 0 0.25' rpy='0 0 0'/> <material name='red' />
-        <geometry><cylinder length='0.5' radius='0.05'/></geometry></visual></link>
-        
-        <joint name='q{{name}}' type='{{type}}'>
-        <origin xyz='{{a}} {{dy}} {{dz}}' rpy='{{alpha}} 0 {{th}}'/>
-        <parent link='link{{previous_name}}' />
-        <child link='link{{name}}' />
-        <axis xyz='0 0 1'/>
-        </joint>
-        
-        
-        
-        "
-        modified_dh_row_template_multi_joint:"<link name='link{{name}}_passive'></link>
+        modified_dh_row_template:"<link name='link{{name}}_passive'></link>
         <link name='link{{name}}'>
         <visual><origin xyz='0 0 0.25' rpy='0 0 0'/> <material name='red' />
         <geometry><cylinder length='0.5' radius='0.05'/></geometry></visual></link>
@@ -220,32 +206,15 @@ Function below takes a dictionary of row values and converts it into xml code.
                 template_xml=template_xml+@row_template_add_x
             
 There is the option of using modified Denavit-Hartenberg parameters, where the sequence of transformations is different. 
-The MDH transformation is Rx(alpha)*Tx(a)*Tz(d)*Rz(theta+q). This can be simplified to a single joint 
-when either alpha=0 or theta=0. However, when both alpha and theta are non-zero, the rotations 
-do not commute (Rx(alpha)*Rz(theta) != Rz(theta)*Rx(alpha)), so we need to use multiple joints 
-like in standard DH.
+The MDH transformation is Rx(alpha)*Tx(a)*Tz(d)*Rz(theta+q). Using a UNIFIED approach, we ALWAYS use 
+two joints for Modified DH to ensure correct kinematic order without complex conditional logic:
+- First joint (fixed): Rx(alpha)*Tx(a)
+- Second joint (variable): Tz(d)*Rz(theta)
 
             if row_dict.modified_dh
-                
-                alpha=parseFloat(row_dict.alpha)
-                th=parseFloat(row_dict.th)
-                d=parseFloat(row_dict.d)
-                
-                # Check if both alpha and theta are non-zero (with small tolerance for floating point)
-                epsilon = 0.0001
-                if (Math.abs(alpha) > epsilon) and (Math.abs(th) > epsilon)
-                    # Use multi-joint approach when both alpha and theta are non-zero
-                    # First joint: Rx(alpha)*Tx(a)
-                    # Second joint: Tz(d)*Rz(theta)
-                    template_xml=@modified_dh_row_template_multi_joint
-                else
-                    # Use simplified single-joint approach when alpha=0 or theta=0
-                    # Calculate combined translation: [a; -sin(alpha)*d; cos(alpha)*d]
-                    row_dict.dy=-Math.sin(alpha)*d
-                    row_dict.dz=Math.cos(alpha)*d
-                    console.log(row_dict.dy)
-                    console.log(row_dict.dz)
-                    template_xml=@modified_dh_row_template_insert
+                # Always use 2-joint approach for Modified DH (unified approach)
+                # This ensures correct transformation order regardless of parameter values
+                template_xml=@modified_dh_row_template
             
             
             row_xml=Mustache.render(template_xml,row_dict)
