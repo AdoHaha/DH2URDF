@@ -94,8 +94,9 @@
   function frame(linkName) {
     return [
       `  <link name="${linkName}">`,
-      '    <visual><origin xyz="0 0 0.125" rpy="0 0 0"/><geometry><cylinder length="0.25" radius="0.012"/></geometry><material name="z_blue"><color rgba="0.1 0.25 0.9 1"/></material></visual>',
-      '    <visual><origin xyz="0.125 0 0" rpy="0 1.5707963267948966 0"/><geometry><cylinder length="0.25" radius="0.012"/></geometry><material name="x_red"><color rgba="0.9 0.15 0.15 1"/></material></visual>',
+      '    <visual><origin xyz="0.125 0 0" rpy="0 1.5707963267948966 0"/><geometry><cylinder length="0.25" radius="0.012"/></geometry><material name="x_red"><color rgba="1 0 0 1"/></material></visual>',
+      '    <visual><origin xyz="0 0.125 0" rpy="-1.5707963267948966 0 0"/><geometry><cylinder length="0.25" radius="0.012"/></geometry><material name="y_green"><color rgba="0 1 0 1"/></material></visual>',
+      '    <visual><origin xyz="0 0 0.125" rpy="0 0 0"/><geometry><cylinder length="0.25" radius="0.012"/></geometry><material name="z_blue"><color rgba="0 0 1 1"/></material></visual>',
       '  </link>'
     ];
   }

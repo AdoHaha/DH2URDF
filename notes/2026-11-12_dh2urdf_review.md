@@ -27,3 +27,9 @@ Scope: the Lean proof covers algebraic ordering. It does not verify the
 JavaScript parser or serializer, which are checked by the executable tests.
 Generated joint ranges and effort/velocity are editing placeholders rather
 than physical specifications.
+
+Follow-up: frame visuals now include all three positive axes using RViz's
+default colors, X red, Y green, and Z blue. XML tests check each cylinder's
+position, direction, color, and size. A second Chromium import confirmed the
+five-row sample loads in MyModelRobot with three colored visuals on the final
+link.

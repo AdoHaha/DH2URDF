@@ -119,6 +119,31 @@ class GeneratorTests(unittest.TestCase):
                 self.assertEqual(len(joints), 2 * len(rows))
                 names = {link.get('name') for link in links}
                 self.assertEqual(len(names), len(links))
+                expected_axes = {
+                    'x_red': ((1, 0, 0), (1, 0, 0, 1)),
+                    'y_green': ((0, 1, 0), (0, 1, 0, 1)),
+                    'z_blue': ((0, 0, 1), (0, 0, 1, 1)),
+                }
+                for link in links:
+                    if link.get('name') not in {'base_link', *(f'link{i}' for i in range(1, len(rows) + 1))}:
+                        continue
+                    visuals = link.findall('visual')
+                    self.assertEqual(len(visuals), 3)
+                    for visual in visuals:
+                        material = visual.find('material')
+                        axis, color = expected_axes[material.get('name')]
+                        self.assertEqual(tuple(map(float, material.find('color').get('rgba').split())), color)
+                        origin = visual.find('origin')
+                        center = tuple(map(float, origin.get('xyz').split()))
+                        for actual, expected in zip(center, (0.125 * value for value in axis)):
+                            self.assertAlmostEqual(actual, expected)
+                        roll, pitch, yaw = map(float, origin.get('rpy').split())
+                        rotation = product(rz(yaw), ry(pitch), rx(roll))
+                        for actual, expected in zip((rotation[i][2] for i in range(3)), axis):
+                            self.assertAlmostEqual(actual, expected)
+                        cylinder = visual.find('geometry/cylinder')
+                        self.assertEqual(cylinder.get('length'), '0.25')
+                        self.assertEqual(cylinder.get('radius'), '0.012')
                 parents = {}
                 for joint in joints:
                     parent, child = joint.find('parent').get('link'), joint.find('child').get('link')

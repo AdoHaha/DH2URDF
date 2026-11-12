@@ -27,7 +27,8 @@ order of transforms:
 | Modified | `Tx(aᵢ₋₁) Rx(αᵢ₋₁) Rz(θᵢ + qᵢ) Tz(dᵢ)` (revolute); `Tx(aᵢ₋₁) Rx(αᵢ₋₁) Rz(θᵢ) Tz(dᵢ + qᵢ)` (prismatic) |
 
 `Tx(aᵢ)` and `Rx(αᵢ)` commute, as do `Rz(θᵢ)` and `Tz(dᵢ)`.
-The base and each row's final link show red X and blue Z frame markers.
+The base and each row's final link show red X, green Y, and blue Z frame
+markers, following [RViz's default axis colors](https://github.com/ros2/rviz/blob/rolling/rviz_rendering/src/rviz_rendering/objects/axes.cpp).
 The URDF is a kinematic scaffold: edit link visuals, collision geometry,
 inertial data, and physical joint limits for your robot. Generated slider
 ranges are ±π radians for revolute joints and ±1 metre for prismatic joints.
